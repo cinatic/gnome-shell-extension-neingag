@@ -1,7 +1,7 @@
 /* jshint esnext:true */
 /*
  *
- *  GNOME Shell Extension for the well know 9gag
+ *  GNOME Shell Extension for the well known 9gag
  *  - displays cute cats and rainbows.
  *  - that's it
  *
