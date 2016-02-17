@@ -1,0 +1,62 @@
+.scrollBox {
+	width: 464px;
+	height: 650px;
+}
+
+.refreshButton {
+	text-align: center;
+}
+
+.categoryTabBar {
+	padding: 5px 5px 10px 5px;
+}
+
+.categoryTabBar .button.hot {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.categoryTabBar .button.trending {
+	border-right: 0;
+	border-left: 0;
+	border-radius: 0;
+}
+
+.categoryTabBar .button.fresh {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+.categoryTabBar .button.active {
+	background-color: #077391;
+}
+
+.gagItem {
+	padding: 10px 0;
+	margin: 1px 0;
+	background-color: white;
+}
+
+.gagItem .title {
+	color: #2e2e2e;
+	font-size: 16px;
+	padding: 5px;
+	margin-bottom: 7px;
+	font-weight: bold;
+	text-align: left;
+	cursor: pointer;
+}
+
+.gagItem .title:hover {
+	color: #07a0c6;
+}
+
+.gagItem .imageBox {
+	padding: 2px;
+}
+
+.gagItem .footer .footerItem {
+	margin: 5px 0 0 5px;
+	padding: 3px;
+	color: #2e2e2e;
+}
