@@ -204,6 +204,7 @@ const ScrollBox = new Lang.Class({
         }
 
         let nextPageID = _currentResultItem ? _currentResultItem.NextPageID : null;
+        log("Next: " + nextPageID);
 
         gagService.loadResultItem(_currentCategory, Lang.bind(this, function(data, b)
         {

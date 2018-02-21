@@ -36,6 +36,7 @@ const Gio = imports.gi.Gio;
 const Soup = imports.gi.Soup;
 const Lang = imports.lang;
 
+const GAG_URL = "http://46.51.195.70/irq";
 
 let _httpSession = new Soup.Session();
 _httpSession.user_agent = "What What";
@@ -46,20 +47,28 @@ const GagService = new Lang.Class({
 
     loadResultItem: function(category, onDataLoaded, nextPageID)
     {
-        let payload = {};
+        let payload = {
+          "section": category || "hot",
+        };
+
         category = category || "hot";
+
+        var url = GAG_URL + "?section=" + category;
 
         if(nextPageID)
         {
-            payload["id"] = nextPageID;
+            url += "&postID=" + nextPageID;
+            payload["postID"] = nextPageID;
         }
 
-        this.loadAsyncUrlData("http://infinigag.k3min.eu/" + category, payload, onDataLoaded);
+        this.loadAsyncUrlData(url, payload, onDataLoaded);
     },
 
     loadAsyncUrlData: function(url, payload, callback)
     {
         _httpSession.abort();
+
+        print(url);
 
         let message = Soup.form_request_new_from_hash('GET', url, payload || {});
 
@@ -87,39 +96,53 @@ const GagService = new Lang.Class({
             return resultItem;
         }
 
-        resultItem.Status = jsonData.status;
-        resultItem.StatusMessage = jsonData.message
+//        resultItem.Status = jsonData.status;
+//        resultItem.StatusMessage = jsonData.message
 
-        resultItem.PreviousPageID = jsonData.paging.previous;
-        resultItem.NextPageID = jsonData.paging.next
+//        resultItem.PreviousPageID = jsonData.paging.previous;
+//        resultItem.NextPageID = jsonData.paging.next
 
-        for(let i = 0; i < jsonData.data.length; i++)
+        for(let i = 0; i < jsonData.length; i++)
         {
-            let jsonGagItem = jsonData.data[i];
+            let jsonGagItem = jsonData[i];
             let resultGagItem = new GagObjects.GagItem();
 
             resultGagItem.ID = jsonGagItem.id;
-            resultGagItem.Title = jsonGagItem.caption;
-            resultGagItem.Link = jsonGagItem.link;
+            resultGagItem.Title = jsonGagItem.title;
+            resultGagItem.Link = jsonGagItem.url;
 
-            resultGagItem.VoteCount = jsonGagItem.votes.count;
-            resultGagItem.CommentCount = jsonGagItem.comments.count;
+            resultGagItem.VoteCount = jsonGagItem.upVoteCount;
+            resultGagItem.CommentCount = jsonGagItem.commentsCount;
 
             resultGagItem.Images = {
-                "Cover" : jsonGagItem.images.cover,
-                "Small" : jsonGagItem.images.small,
-                "Normal": jsonGagItem.images.normal,
-                "Large" : jsonGagItem.images.large
+                "Cover" : jsonGagItem.content,
+                "Small" : jsonGagItem.content,
+                "Normal": jsonGagItem.content,
+                "Large" : jsonGagItem.content
             };
 
-            if(jsonGagItem.media && jsonGagItem.media.mp4)
+            if(jsonGagItem.type == "Video")
             {
                 resultGagItem.Media = {
-                    "Mp4": jsonGagItem.media.mp4
+                    "Mp4": jsonGagItem.content
                 };
+
+                var firstPath = jsonGagItem.content.split('.').slice(0, -1).join('.');
+                var imageUrl = firstPath.slice(0, -1) + ".jpg";
+                resultGagItem.Images = {
+                 "Cover" : imageUrl,
+                 "Small" : imageUrl,
+                 "Normal": imageUrl,
+                 "Large" : imageUrl
+               };
             }
 
             resultItem.Items.push(resultGagItem);
+
+            if(jsonData.length == i+1)
+            {
+                resultItem.NextPageID = resultGagItem.ID;
+            }
         }
 
         return resultItem;
